@@ -5,10 +5,17 @@
 Apache camel er et lettvekts integrasjonsprodukt. Den bygger på "Enterprise Integration Patterns" beskrevet i boken med samme navn av Gregor Hohpe og Bobby Woolf.
 
 http://www.enterpriseintegrationpatterns.com/
-http://camel.apache.org/enterprise-integration-patterns.html
 
-Dette defineres
+Dette definer et sett mønster en kan bruke i koden.
+Eksempler på dette:
+* Melding
+* Dead letter queue
+* public/subscribe channel
+* Message filter
+* Splitter
+* for en god oversikt se: http://camel.apache.org/enterprise-integration-patterns.html
 
+Camel handler om integrasjon, og for å få til det, må en ha mulighet til å snakke over ulike kanaler og mekanismer.
 Det støttes veldig mange komponenter rett ut av boksen. Eksempler på dette er:
 * JMS
 * CXF
@@ -16,12 +23,7 @@ Det støttes veldig mange komponenter rett ut av boksen. Eksempler på dette er:
 * Filer
 * FTP
 * LDAP
-* +++ mange mange flere
-
-For en utfyllende liste se http://camel.apache.org/components.html
-
-
-
+* For en utfyllende liste se http://camel.apache.org/components.html
 
 ## Ruter
 Et sentralt begrep i camel er Ruter.
@@ -54,8 +56,15 @@ http://camel.apache.org/testing.html
 
 En kan teste en enkelt rute, eller et sett med ruter.
 
+##Dokumentasjon
+Det finnes fantastisk dokumentasjon på http://camel.apache.org
+Det er lett å navigere, og har godt eksempler. Den blir også oppdatert for hver release.
 
 
 ##Visualisering
 
-Det finnes
+Det finnes verktøy som gjør at en kan visualisere camel router.
+
+Et som jeg har testet er hawtio (http://hawt.io/plugins/camel/).
+
+Fuse er et JBoss produkt som er bygget på toppen av apache camel. Fuse har bla visualisering av ruter.

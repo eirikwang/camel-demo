@@ -6,6 +6,8 @@ import no.nav.sbl.demo.camel.joark.JoarkHandterer;
 import no.nav.sbl.demo.camel.sb.RapporterOpprettetSB;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.builder.DeadLetterChannelBuilder;
+import org.apache.camel.builder.ErrorHandlerBuilder;
 import org.apache.camel.main.Main;
 
 public class MainApp {
@@ -16,11 +18,14 @@ public class MainApp {
         main.getOrCreateCamelContext().setUseMDCLogging(true);
         main.getOrCreateCamelContext().setUseBreadcrumb(true);
         main.getOrCreateCamelContext().addComponent("activemq", ActiveMQComponent.activeMQComponent("tcp://localhost:61616"));
+        main.getOrCreateCamelContext().setErrorHandlerBuilder(new DeadLetterChannelBuilder("direct:feil"));
         main.addRouteBuilder(new InnHenvendelseRouteBuilder());
         main.addRouteBuilder(new HentHenvendelse());
         main.addRouteBuilder(new JoarkHandterer());
-        //main.addRouteBuilder(new RapporterOpprettetSB());
+        main.addRouteBuilder(new RapporterOpprettetSB());
+        main.addRouteBuilder(new MotattLogger());
         main.addRouteBuilder(new EksempelDataOppretter());
+        main.addRouteBuilder(new GlobalFeilhandterer());
         main.run(args);
     }
 

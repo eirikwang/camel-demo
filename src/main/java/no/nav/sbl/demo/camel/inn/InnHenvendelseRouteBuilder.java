@@ -14,6 +14,8 @@ import javax.xml.bind.JAXBException;
  */
 public class InnHenvendelseRouteBuilder extends RouteBuilder {
 
+    public static final String HENDELSER = "seda:hendelser?multipleConsumers=true";
+
     @Override
     protected ModelCamelContext createContainer() {
         ModelCamelContext container = super.createContainer();
@@ -25,12 +27,13 @@ public class InnHenvendelseRouteBuilder extends RouteBuilder {
      * Let's configure the Camel routing rules using Java code...
      */
     public void configure() throws JAXBException {
+
         DataFormat df = new JaxbDataFormat(JAXBContext.newInstance(HenvendelseHendelse.class));
         from("activemq:queue:innkommendeMelding")
                 .setProperty("camel.contextId", header("callId"))
                 .log("mottok: " + body())
                 .unmarshal(df)
-                .to("seda:hendelser");
+                .to(HENDELSER);
     }
 
 }

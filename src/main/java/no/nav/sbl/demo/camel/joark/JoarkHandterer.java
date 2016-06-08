@@ -2,6 +2,7 @@ package no.nav.sbl.demo.camel.joark;
 
 import no.nav.sbl.demo.camel.NavRouteBuilder;
 import no.nav.sbl.demo.camel.henvendelse.Henvendelse;
+import no.nav.sbl.demo.camel.inn.InnHenvendelseRouteBuilder;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.TypeConversionException;
@@ -9,29 +10,33 @@ import org.apache.camel.support.TypeConverterSupport;
 
 import java.util.Arrays;
 
+import static no.nav.sbl.demo.camel.inn.InnHenvendelseRouteBuilder.HENDELSER;
 import static org.apache.camel.language.spel.SpelExpression.spel;
 
 public class JoarkHandterer extends NavRouteBuilder {
     @Override
     public void configure() throws Exception {
-        getContext().getTypeConverterRegistry().addTypeConverter(Henvendelse.class, JoarkMelding.class, new JoarkMeldingTransformer());
-        from("seda:hendelser")
+        getContext().getTypeConverterRegistry().addTypeConverter(JoarkMelding.class,Henvendelse.class, new JoarkMeldingTransformer());
+        from(HENDELSER)
                 .filter(body().in(type("henvendelseAvsluttet")))
                 .setProperty("hendelse", body())
 
                 .setHeader("henvendelseId", spel("#{request.body.id}"))
                 .enrich("direct:hentFraHenvendelse")
                 .setHeader("henvendelse", body())
-                .setBody(body().convertTo(JoarkMelding.class))
+                .convertBodyTo(JoarkMelding.class)
                 .to("direct:opprettJoark")
                 .log("body er: " + body())
-                .setBody(exchangeProperty("jm"))
-                .transform(spel("#{request.body.filer}"))
+                .transform(spel("#{request.body.dokumenter}"))
                 .split(body())
-                .to("direct:leggTilFilTilJournalpost")
+                .to("direct:leggTilFilTilJournalpost").end()
+                .to("direct:avsluttJoark")
+
         ;
         from("direct:opprettJoark")
                 .log(LoggingLevel.INFO, "no.nav.sbl", "senderTilJoark: " + body());
+        from("direct:avsluttJoark")
+                .log(LoggingLevel.INFO, "no.nav.sbl", "avslutterJoark: " + body());
         from("direct:leggTilFilTilJournalpost")
                 .log(LoggingLevel.INFO, "no.nav.sbl", "sender fil til joark: " + body());
 
