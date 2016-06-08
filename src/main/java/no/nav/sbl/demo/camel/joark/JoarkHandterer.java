@@ -19,17 +19,22 @@ public class JoarkHandterer extends NavRouteBuilder {
                 .filter(body().in(type("henvendelseAvsluttet")))
                 .setProperty("hendelse", body())
 
-                .setHeader("henvendelseId", spel("${in.body.id}"))
+                .setHeader("henvendelseId", spel("#{request.body.id}"))
                 .enrich("direct:hentFraHenvendelse")
                 .setHeader("henvendelse", body())
                 .setBody(body().convertTo(JoarkMelding.class))
-                .log(LoggingLevel.INFO, "no.nav.sbl", "senderTilJoark: " + body())
                 .to("direct:opprettJoark")
-                .transform(spel("${in.body.filer}"))
+                .log("body er: " + body())
+                .setBody(exchangeProperty("jm"))
+                .transform(spel("#{request.body.filer}"))
                 .split(body())
-                .log(LoggingLevel.INFO, "no.nav.sbl", "sender fil til joark: " + body())
                 .to("direct:leggTilFilTilJournalpost")
         ;
+        from("direct:opprettJoark")
+                .log(LoggingLevel.INFO, "no.nav.sbl", "senderTilJoark: " + body());
+        from("direct:leggTilFilTilJournalpost")
+                .log(LoggingLevel.INFO, "no.nav.sbl", "sender fil til joark: " + body());
+
     }
 
     private class JoarkMeldingTransformer extends TypeConverterSupport {

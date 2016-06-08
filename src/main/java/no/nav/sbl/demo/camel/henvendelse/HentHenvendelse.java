@@ -7,8 +7,7 @@ public class HentHenvendelse extends RouteBuilder{
 
     @Override
     public void configure() throws Exception {
-
-        from("direct:hentHevendelse")
+        from("direct:hentFraHenvendelse")
                 .setBody(header("henvendelseId"))
                 .setBody(method(this, "lagHenvendelse"));
 
